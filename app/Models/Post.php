@@ -2,28 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\File;
-use PhpParser\Node\Expr\FuncCall;
-use Ramsey\Collection\Map\AssociativeArrayMap;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Post
+class Post extends Model
 {
-    public static function all()
-    {
-        $files = File::files(resource_path("posts/"));
+    use HasFactory;
 
-        return array_map(fn ($file) => $file->getContents(), $files);
+    protected $guarded = ['id'];
+
+    protected $with = ['category', 'author'];
+    // protected $fillable = ['title', 'excerpt', 'body'];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
-    public static function find($slug)
+    public function author()
     {
-        if (!file_exists($path = resource_path("posts/{$slug}.html"))) {
-            throw new ModelNotFoundException();
-        }
-
-        // $post = file_get_contents(__DIR__."/../resources/posts/{$slug}.html");
-
-        return cache()->remember("posts.{$slug}", 1200, fn () => file_get_contents($path));
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
