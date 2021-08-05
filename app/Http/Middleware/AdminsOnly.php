@@ -21,6 +21,8 @@ class AdminsOnly
             if(auth()->user()->username != 'angcungsen'){
                 abort(Response::HTTP_FORBIDDEN);
             }
+        }else{
+            abort(Response::HTTP_FORBIDDEN);
         }
         return $next($request);
     }
